@@ -4,6 +4,7 @@ const CustomAPIError = require('./custom-api');
 class BadRequestError extends CustomAPIError {
   constructor(message) {
     super(message);
+    this.name = this.constructor.name;
     this.statusCode = StatusCodes.BAD_REQUEST;
   }
 }

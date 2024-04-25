@@ -338,4 +338,27 @@ describe('productController', () => {
       expect(calculateDiscount(100, 'membru')).toEqual(5);
     });
   });
+
+  function decidePass(score, attendance) {
+    if (score >= 50 && attendance >= 75) {
+      return 'Pass';
+    } else {
+      return 'Fail';
+    }
+  }
+
+  describe('decidePass', () => {
+    it('should pass with high score and attendance', () => {
+      expect(decidePass(90, 80)).toEqual('Pass');
+    });
+    it('should fail with low score', () => {
+      expect(decidePass(40, 80)).toEqual('Fail');
+    });
+    it('should fail with low attendance', () => {
+      expect(decidePass(60, 70)).toEqual('Fail');
+    });
+    it('should fail with low score and attendance', () => {
+      expect(decidePass(40, 70)).toEqual('Fail');
+    });
+  });
 });

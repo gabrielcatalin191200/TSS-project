@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE coverage SYSTEM "http://cobertura.sourceforge.net/xml/coverage-04.dtd">
-<coverage lines-valid="460" lines-covered="283" line-rate="0.6152000000000001" branches-valid="98" branches-covered="59" branch-rate="0.602" timestamp="1713026058503" complexity="0" version="0.1">
+<coverage lines-valid="460" lines-covered="283" line-rate="0.6152000000000001" branches-valid="98" branches-covered="59" branch-rate="0.602" timestamp="1714043497205" complexity="0" version="0.1">
   <sources>
     <source>/Users/lcretu/Desktop/Facultate/Anul 4/Semestrul 2/Testare/TSS-project</source>
   </sources>

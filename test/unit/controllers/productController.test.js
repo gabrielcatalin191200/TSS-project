@@ -318,24 +318,24 @@ describe('productController', () => {
 
   describe('calculateDiscount', () => {
     it('should handle minimum edge price', () => {
-      expect(calculateDiscount(1, 'normal')).toEqual(0); // Assuming no discount for edge case
+      expect(calculateDiscount(1, 'normal')).to.equal(0);
     });
     it('should handle just over maximum edge price', () => {
-      expect(() => calculateDiscount(1001, 'normal')).toThrow('Invalid price');
+      expect(() => calculateDiscount(1001, 'normal')).to.throw('Invalid price');
     });
     it('should handle maximum edge price', () => {
-      expect(calculateDiscount(1000, 'normal')).toEqual(0);
+      expect(calculateDiscount(1000, 'normal')).to.equal(0);
     });
     it('should handle unknown customer type', () => {
-      expect(() => calculateDiscount(100, 'unknown')).toThrow(
+      expect(() => calculateDiscount(100, 'unknown')).to.throw(
         'Invalid customer type'
       );
     });
     it('should handle normal customer type', () => {
-      expect(calculateDiscount(100, 'normal')).toEqual(0);
+      expect(calculateDiscount(100, 'normal')).to.equal(0);
     });
     it('should handle member customer type', () => {
-      expect(calculateDiscount(100, 'membru')).toEqual(5);
+      expect(calculateDiscount(100, 'membru')).to.equal(5);
     });
   });
 
@@ -349,16 +349,16 @@ describe('productController', () => {
 
   describe('decidePass', () => {
     it('should pass with high score and attendance', () => {
-      expect(decidePass(90, 80)).toEqual('Pass');
+      expect(decidePass(90, 80)).to.equal('Pass');
     });
     it('should fail with low score', () => {
-      expect(decidePass(40, 80)).toEqual('Fail');
+      expect(decidePass(40, 80)).to.equal('Fail');
     });
     it('should fail with low attendance', () => {
-      expect(decidePass(60, 70)).toEqual('Fail');
+      expect(decidePass(60, 70)).to.equal('Fail');
     });
     it('should fail with low score and attendance', () => {
-      expect(decidePass(40, 70)).toEqual('Fail');
+      expect(decidePass(40, 70)).to.equal('Fail');
     });
   });
 });

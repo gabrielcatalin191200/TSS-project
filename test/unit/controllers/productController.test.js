@@ -339,6 +339,8 @@ describe('productController', () => {
     });
   });
 
+  
+  // Testatre structurala: statement, branch si condition
   function decidePass(score, attendance) {
     if (score >= 50 && attendance >= 75) {
       return 'Pass';

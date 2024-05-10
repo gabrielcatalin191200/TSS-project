@@ -51,7 +51,32 @@ describe("orderController", () => {
                 expect(error.statusCode).to.equal(StatusCodes.BAD_REQUEST);
             }
         });
+
+        it('should throw BadRequestError if no cart items are provided', async () => {
+            const { req, res } = createMockReqRes({ tax: 5, shippingFee: 10, items: []});
     
+            try {
+                await handler.createOrder(req, res);
+            } catch (error) {
+                expect(error.name).to.equal('BadRequestError');
+                expect(error.message).to.equal('No cart items provided');
+                expect(error.statusCode).to.equal(StatusCodes.BAD_REQUEST);
+            }
+        });
+
+        it('should throw BadRequestError if no tax or shipping fee is provided', async () => {
+            const { req, res } = createMockReqRes({ items: [{ mock: true }] });
+    
+            try {
+                await handler.createOrder(req, res);
+            } catch (error) {
+                expect(error.name).to.equal('BadRequestError');
+                expect(error.message).to.equal('Please provide tax and shipping fee');
+                expect(error.statusCode).to.equal(StatusCodes.BAD_REQUEST);
+            }
+        })
+
+        
         it('should throw BadRequestError if no tax or shipping fee is provided', async () => {
             const { req, res } = createMockReqRes({ items: [{ mock: true }] });
     
@@ -63,7 +88,51 @@ describe("orderController", () => {
                 expect(error.statusCode).to.equal(StatusCodes.BAD_REQUEST);
             }
         });
-    
+
+        it('should verify the structure of fakeStripeAPI response', async () => {
+            const productID = 'prod1';
+            const { req, res } = createMockReqRes({
+                items: [{ product: productID, amount: 1 }],
+                tax: 10,
+                shippingFee: 5
+            });
+
+            findOneStub.resolves({ name: 'mock', price: 500, image: 'mock.jpg', _id: productID });
+            createStub.resolves({
+                clientSecret: '',
+                total: 515,
+                subtotal: 500,
+                tax: 10,
+                shippingFee: 5,
+                orderItems: [{
+                    amount: 1,
+                    product: productID,
+                    price: 500,
+                    image: 'mock.jpg',
+                    name: 'mock'
+                }]
+            });
+        
+            handler.__set__('fakeStripeAPI', sinon.stub().resolves({ client_secret: '', amount: 0 }));
+        
+            await handler.createOrder(req, res);
+        
+            expect(res.status.calledWith(StatusCodes.CREATED)).to.be.true;
+            expect(res.json.args[0][0].clientSecret).to.equal('');
+        });        
+
+
+        it('should throw BadRequestError if cart items are empty', async () => {
+            const { req, res } = createMockReqRes({ tax: 10, shippingFee: 5 });
+            try {
+                await handler.createOrder(req, res);
+            } catch (error) {
+                expect(error.name).to.equal('BadRequestError');
+                expect(error.message).to.equal('No cart items provided');
+            }
+        });
+
+        
         it('should throw NotFoundError if product is not found', async function () {
             const id = '507f1f77bcf86cd799439011'
             const { req, res } = createMockReqRes({
@@ -121,6 +190,7 @@ describe("orderController", () => {
             expect(findStub.calledOnce).to.be.true;
             expect(res.status.calledWith(StatusCodes.OK)).to.be.true;
             expect(res.json.calledOnce).to.be.true;
+            expect(res.json.calledWith({ orders: [{ mock: true }], count: 1 })).to.be.true;
         });
     });
     
@@ -141,8 +211,10 @@ describe("orderController", () => {
             await handler.getSingleOrder(req, res);
     
             expect(findOneStub.calledOnce).to.be.true;
+            expect(findOneStub.calledWith({ _id: id })).to.be.true;
             expect(res.status.calledWith(StatusCodes.OK)).to.be.true;
             expect(res.json.calledOnce).to.be.true;
+            expect(res.json.calledWith({ order: { mock: true } })).to.be.true;
         });
     
         it('should return NotFoundError if order is not found', async () => {
@@ -171,15 +243,17 @@ describe("orderController", () => {
         });
     
         it('should return all orders for a user', async () => {
-            const { req, res } = createMockReqRes({ userId: '507f1f77bcf86cd799439012' });
+            const { req, res } = createMockReqRes({ }, {}, { userId: '507f1f77bcf86cd799439012' });
     
             findStub.resolves([{ mock: true }]);
     
             await handler.getCurrentUserOrders(req, res);
     
             expect(findStub.calledOnce).to.be.true;
+            expect(findStub.calledWith({ user: '507f1f77bcf86cd799439012' })).to.be.true;
             expect(res.status.calledWith(StatusCodes.OK)).to.be.true;
             expect(res.json.calledOnce).to.be.true;
+            expect(res.json.calledWith({ orders: [{ mock: true }], count: 1 })).to.be.true;
         });
     });
     

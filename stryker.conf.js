@@ -3,8 +3,8 @@ module.exports = {
     reporters: ["html", "clear-text", "progress"],
     testRunner: "mocha",
     mochaOptions: {
-        spec: ["test/unit/**/*.js"]
+        spec: ["test/unit/controllers/*.js"]
     },
     coverageAnalysis: "off",
-    mutate: ["controllers/**.js"]
+    mutate: ["controllers/*.js"]
 };

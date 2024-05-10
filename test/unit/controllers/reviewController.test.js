@@ -52,7 +52,9 @@ describe('reviewController', () => {
             await handler.createReview(req, res);
 
             expect(findOneProductStub.calledOnce).to.be.true;
+            expect(findOneProductStub.calledWith({ _id: '123' })).to.be.true;
             expect(findOneReviewStub.calledOnce).to.be.true;
+            expect(findOneReviewStub.calledWith({ product: '123', user: '123' })).to.be.true;
             expect(createStub.calledOnce).to.be.true;
             expect(res.status.calledWith(StatusCodes.CREATED)).to.be.true;
             expect(res.json.calledWith({ review: mockReview })).to.be.true;
@@ -115,7 +117,9 @@ describe('reviewController', () => {
             await handler.getAllReviews(req, res);
 
             expect(findStub.calledOnce).to.be.true;
+            expect(findStub.calledWith({})).to.be.true;
             expect(populateStub.calledOnce).to.be.true;
+            expect(populateStub.calledWith({ path: 'user', select: 'name' })).to.be.true;
             expect(res.status.calledWith(StatusCodes.OK)).to.be.true;
             expect(res.json.calledWith({ reviews: mockReviews })).to.be.true;
         });

@@ -39,6 +39,22 @@ describe("authController", () => {
             createStub = sinon.stub(User, 'create');
         });
 
+        it('should call findOne with correct email', async () => {
+            const { req, res } = createMockReqRes({ email: 'test@mock.com', name: 'test', password: 'password' });
+            
+            await handler.register(req, res);
+            
+            expect(User.findOne.calledWith({ email: 'test@mock.com' })).to.be.true;
+        });
+        
+        it('should create user with correct details', async () => {
+            const { req, res } = createMockReqRes({ email: 'test@mock.com', name: 'test', password: 'password' });
+            
+            await handler.register(req, res);
+            
+            expect(User.create.calledWith({ name: 'test', email: 'test@mock.com', password: 'password', role: 'user' })).to.be.true;
+        });        
+
         it('should register a user', async () => {
             const { req, res } = createMockReqRes({ email: 'test@mock.com', name: 'test', password: 'password' });
 
@@ -109,6 +125,14 @@ describe("authController", () => {
             }
         });
 
+        it('should verify correct password handling', async () => {
+            const { req, res } = createMockReqRes({ email: 'test@mock.com', password: 'password' });
+            findOneStub.returns({ comparePassword: sinon.stub().returns(true) });
+            await handler.login(req, res);
+            expect(res.status.calledWith(StatusCodes.OK)).to.be.true;
+            expect(res.json.calledWith(sinon.match.has("user"))).to.be.true;
+        });
+
         it('should throw an error if password is incorrect', async () => {
             const { req, res } = createMockReqRes({ email: 'test@mock.com', password: 'password' });
 
@@ -148,5 +172,11 @@ describe("authController", () => {
             expect(res.status.calledWith(StatusCodes.OK)).to.be.true;
             expect(res.json.calledOnce).to.be.true;
         });
+
+        it('should set the correct logout cookie', async () => {
+            const { req, res } = createMockReqRes();
+            await handler.logout(req, res);
+            expect(res.cookie.calledWith('token', 'logout', sinon.match({ httpOnly: true, expires: sinon.match.date }))).to.be.true;
+        });        
     });
 });

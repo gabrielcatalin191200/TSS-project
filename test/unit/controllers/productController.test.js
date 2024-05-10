@@ -117,6 +117,8 @@ describe('productController', () => {
       await handler.getSingleProduct(req, res);
 
       expect(populateStub.calledOnce).to.be.true;
+      expect(populateStub.calledWith('reviews')).to.be.true;
+      expect(findOneStub.calledWith({ _id: id })).to.be.true;
       expect(res.status.calledWith(StatusCodes.OK)).to.be.true;
       expect(res.json.calledWith({ product: mockProduct })).to.be.true;
     });
@@ -168,6 +170,11 @@ describe('productController', () => {
       await handler.updateProduct(req, res);
 
       expect(findOneAndUpdateStub.calledOnce).to.be.true;
+      expect(findOneAndUpdateStub.calledWith(
+        { _id: id }, 
+        { name: 'product1', price: 100, description: 'description' }, 
+        { new: true, runValidators: true}
+      )).to.be.true;
       expect(res.status.calledWith(StatusCodes.OK)).to.be.true;
       expect(res.json.calledWith({ product: mockProduct })).to.be.true;
     });
